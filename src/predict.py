@@ -65,16 +65,16 @@ def decoder(pred, obj_thres=0.1):
             if better_box[4] < obj_thres:
                 continue
             better_box_xyxy = torch.FloatTensor(better_box.size())
-            print(f'grid(cx,cy), (w,h), obj:{better_box}')
+            # print(f'grid(cx,cy), (w,h), obj:{better_box}')
             better_box_xyxy[:2] = better_box[:2] / float(GRID_NUM) - 0.5 * better_box[2:4]
             better_box_xyxy[2:4] = better_box[:2] / float(GRID_NUM) + 0.5 * better_box[2:4]
             better_box_xyxy[0:4:2] += (w / float(GRID_NUM))
             better_box_xyxy[1:4:2] += (h / float(GRID_NUM))
             better_box_xyxy = better_box_xyxy.clamp(max=1.0, min=0.0)
             score, cls = pred[0, w, h, 10:].max(dim=0)
-            print(f'pre_cls_shape:{pred[0, w, h, 10:].shape}')
+            # print(f'pre_cls_shape:{pred[0, w, h, 10:].shape}')
             from dataset import VOC_CLASSES as LABELS
-            print(f'score:{score}\tcls:{cls}\ttag:{LABELS[cls]}')
+            # print(f'score:{score}\tcls:{cls}\ttag:{LABELS[cls]}')
             better_box_xyxy[4] = score * better_box[4]
             res[cls].append(better_box_xyxy)
     # print(res)
@@ -84,7 +84,7 @@ def decoder(pred, obj_thres=0.1):
             res[i] = torch.stack(res[i], 0)
         else:
             res[i] = torch.tensor([])
-    print(res)
+    # print(res)
     return res
 
 
@@ -187,10 +187,16 @@ def img_to_tensor_batch(img_path, size=(448, 448)):
     return img_tensor, img
 
 
-def predict_one_img(img_path, model, show=True):
+def predict_one_img(img_path, model):
     # model = Yolov1(backbone_name=backbone_name)
     # model.load_model()
     img_tensor, img = img_to_tensor_batch(img_path)
+    boxes, tags, scores = predict(img_tensor, model)
+    img = np.array(img)
+    draw_box(img_np=img, boxes_np=boxes, scores_np=scores, tags_np=tags, relative_coord=True)
+
+
+def predict(img_tensor, model):
     model.eval()
     img_tensor, model = img_tensor.to(DEVICE), model.to(DEVICE)
     with torch.no_grad():
@@ -200,10 +206,10 @@ def predict_one_img(img_path, model, show=True):
         boxes, tags, scores = [], [], []
         for cls, pred_target in enumerate(out):
             if pred_target.shape[0] > 0:
-                print(pred_target.shape)
+                # print(pred_target.shape)
                 b = pred_target[:, :4]
                 p = pred_target[:, 4]
-                print(b, p)
+                # print(b, p)
                 keep_idx, count = _nms(b, p, overlap=0.5)
                 # keep:[, 5]
                 keep = pred_target[keep_idx]
@@ -221,9 +227,6 @@ def predict_one_img(img_path, model, show=True):
             tags = torch.LongTensor([])  # .squeeze(dim=0)
             scores = torch.FloatTensor([])  # .squeeze(dim=0)
         # img, boxes, tags, scores = np.array(img), np.array(boxes), np.array(tags), np.array(scores)
-        img = np.array(img)
-        if show:
-            draw_box(img_np=img, boxes_np=boxes, scores_np=scores, tags_np=tags, relative_coord=True)
         return boxes, tags, scores
 
 
@@ -236,7 +239,7 @@ if __name__ == '__main__':
     model.load_model()
     # predict_one_img('../test_img/000001.jpg', model)
     # test_img_dir = '../test_img'
-    test_img_dir = '/Users/chenlinwei/Dataset/VOC2012_DATASET/Test/VOC2012/JPEGImages'
+    test_img_dir = '/Users/chenlinwei/Dataset/VOC0712/VOC2012test/JPEGImages'
     for root, dirs, files in os.walk(test_img_dir, topdown=True):
         if test_img_dir == root:
             print(root, dirs, files)

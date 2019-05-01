@@ -13,7 +13,7 @@ from PIL import Image
 from dataset import detection_collate, VOCDetection
 from torch.utils import data
 
-
+# TODO：cal the mAP
 def get_test_data_set(args, percent_coord=False, year=None):
     if year == '2007':
         image_sets = (('2007test', 'test'),)
@@ -69,5 +69,5 @@ def data_set_test():
 
 
 if __name__ == '__main__':
-    # data_set_test()
+    data_set_test()
     pass
