@@ -14,7 +14,7 @@ def config_parser():
     parser = argparse.ArgumentParser(description='Single Shot MultiBox Detector Training With Pytorch')
     # train_set = parser.add_mutually_exclusive_group()
     # 训练集与基础网络设定
-    parser.add_argument('--voc_data_set_root', default='/Users/chenlinwei/Dataset/VOC0712trainval',
+    parser.add_argument('--voc_data_set_root', default='/Users/chenlinwei/Dataset/VOC0712',
                         help='data_set root directory path')
     parser.add_argument('--batch_size', default=2, type=int,
                         help='Batch size for training')

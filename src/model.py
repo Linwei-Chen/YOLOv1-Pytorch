@@ -146,7 +146,7 @@ if __name__ == '__main__':
     x = torch.rand(2, 3, 448, 448)
     for name in ['resnet18', 'resnet50', 'resnet101']:
         model, _ = get_backbone(name)
-        step = 1
+        step = 0
         yolo_model = Yolov1(backbone_name=name)
         optimizer = optim.SGD(yolo_model.parameters(),
                               lr=LEARNING_RATE,

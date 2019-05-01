@@ -592,3 +592,27 @@ class Yolov1Augmentation(object):
 
     def __call__(self, img, boxes, labels):
         return self.augment(img, boxes, labels)
+
+
+class Yolov1TestAugmentation(object):
+    def __init__(self, size=448, percent_coord=False):
+        self.augment = Compose([
+            # 将图片转化为np.float32
+            ConvertFromInts(),
+            # 得到框的绝对坐标
+            ToAbsoluteCoords(),
+            # 相对坐标
+            ToPercentCoords(),
+            Divide255(),
+            Resize(size=size),
+        ]) if percent_coord else Compose([
+            # 将图片转化为np.float32
+            ConvertFromInts(),
+            # 得到框的绝对坐标
+            ToAbsoluteCoords(),
+            Divide255(),
+            Resize(size=size),
+        ])
+
+    def __call__(self, img, boxes, labels):
+        return self.augment(img, boxes, labels)

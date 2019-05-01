@@ -12,6 +12,7 @@ import torch.utils.data as data
 import cv2
 import numpy as np
 from config import GRID_NUM
+
 # sys.version_info(major=3, minor=7, micro=1, releaselevel='final', serial=0)
 # 根据Python版本导入模块
 if sys.version_info[0] == 2:
@@ -283,7 +284,8 @@ def yolov1_data_encoder(boxes, labels, grid_num=GRID_NUM):
         # B1、B2、C 标记为1
         target[int(ij[1]), int(ij[0]), 4] = 1
         target[int(ij[1]), int(ij[0]), 9] = 1
-        target[int(ij[1]), int(ij[0]), int(labels[i]) + 9] = 1
+        # int(labels[i]) + 10
+        target[int(ij[1]), int(ij[0]), int(labels[i]) + 10] = 1
         # 匹配到的网格的左上角相对坐标
         xy = ij * cell_size
         # 真框相对于格子坐上角的偏移量
@@ -296,12 +298,21 @@ def yolov1_data_encoder(boxes, labels, grid_num=GRID_NUM):
 
 
 # batch：(imgs:list[tensor img \in(0,1)], targets:list[tensor:[object_num, 5]])
-def get_voc_data_set(args, percent_coord=False):
-    # from train import config_parser
-    # args = config_parser()
+def get_voc_data_set(args, percent_coord=False, test=False, year=None):
+    if not test:
+        image_sets = (('2007', 'trainval'), ('2012', 'trainval'))
+    else:
+        if year is None:
+            image_sets = (('2007test', 'test'), ('2012test', 'test'))
+        elif year == '2007':
+            image_sets = (('2007test', 'test'),)
+        elif year == '2012':
+            image_sets = (('2012test', 'test'),)
     from augmentations import Yolov1Augmentation
     dataset = VOCDetection(root=args.voc_data_set_root,
-                           transform=Yolov1Augmentation(percent_coord=percent_coord))
+                           image_sets=image_sets,
+                           # transform=Yolov1Augmentation(size=YOLOv1_PIC_SIZE, percent_coord=percent_coord))
+                           transform=Yolov1Augmentation(size=448, percent_coord=percent_coord))
     return data.DataLoader(dataset,
                            args.batch_size,
                            num_workers=args.num_workers,
@@ -311,12 +322,13 @@ def get_voc_data_set(args, percent_coord=False):
 
 
 if __name__ == '__main__':
-    from test import draw_box
+    from predict import draw_box
 
     # global TEST_MODE
     from train import config_parser
+
     args = config_parser()
-    data_set = get_voc_data_set(args, percent_coord=True)
+    data_set = get_voc_data_set(args, percent_coord=True, test=True, year='2012')
     for _, (imgs, gt_boxes, gt_labels, gt_outs) in enumerate(data_set):
         # print(f'img:{imgs}')
         # print(f'targets:{targets}')
@@ -330,6 +342,7 @@ if __name__ == '__main__':
         for img, gt_box, gt_label in zip(imgs, gt_boxes, gt_labels):
             gt_box_np = gt_box.cpu().numpy()
             gt_label_np = gt_label.cpu().numpy()
+            print(f'gt_label_np:{gt_label_np}')
             print(f'gt_box_np{gt_box_np.shape},gt_label_np:{gt_label_np.shape}')
             img_np = (img * 255.0).cpu().numpy().astype(np.uint8)
             # print(f'img_np:{img_np}')
