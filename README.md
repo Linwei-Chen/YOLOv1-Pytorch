@@ -2,7 +2,7 @@
 
 
 
-You can see more details about YOLO by clicking the link below:
+You can see more details about Yolo by clicking the link below:
 
 <https://zhuanlan.zhihu.com/p/64051698>
 
@@ -10,11 +10,11 @@ You can see more details about YOLO by clicking the link below:
 
 ## Demo
 
-![](./YOLOv1_demo/test1.png)
+![](./Yolov1_demo/test1.png)
 
-![](./YOLOv1_demo/test10.png)
+![](./Yolov1_demo/test10.png)
 
-![](./YOLOv1_demo/test12.png)
+![](./Yolov1_demo/test12.png)
 
 
 
