@@ -59,9 +59,9 @@ def decoder(pred, obj_thres=0.1):
     # i for W, j for H
     res = [[] for i in range(len(VOC_CLASSES))]
     # print(res)
-    for w in range(GRID_NUM):
-        for h in range(GRID_NUM):
-            better_box = pred[0, w, h, :5] if pred[0, w, h, 4] > pred[0, w, h, 9] else pred[0, w, h, 5:10]
+    for h in range(GRID_NUM):
+        for w in range(GRID_NUM):
+            better_box = pred[0, h, w, :5] if pred[0, h, w, 4] > pred[0, h, w, 9] else pred[0, h, w, 5:10]
             if better_box[4] < obj_thres:
                 continue
             better_box_xyxy = torch.FloatTensor(better_box.size())
@@ -71,7 +71,7 @@ def decoder(pred, obj_thres=0.1):
             better_box_xyxy[0:4:2] += (w / float(GRID_NUM))
             better_box_xyxy[1:4:2] += (h / float(GRID_NUM))
             better_box_xyxy = better_box_xyxy.clamp(max=1.0, min=0.0)
-            score, cls = pred[0, w, h, 10:].max(dim=0)
+            score, cls = pred[0, h, w, 10:].max(dim=0)
             # print(f'pre_cls_shape:{pred[0, w, h, 10:].shape}')
             from dataset import VOC_CLASSES as LABELS
             # print(f'score:{score}\tcls:{cls}\ttag:{LABELS[cls]}')
@@ -202,7 +202,7 @@ def predict(img_tensor, model):
     with torch.no_grad():
         out = model(img_tensor)
         # out:list[tensor[, 5]]
-        out = decoder(out, obj_thres=0.5)
+        out = decoder(out, obj_thres=0.3)
         boxes, tags, scores = [], [], []
         for cls, pred_target in enumerate(out):
             if pred_target.shape[0] > 0:
