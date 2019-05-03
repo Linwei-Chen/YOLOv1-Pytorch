@@ -10,11 +10,21 @@ You can see more details about Yolo by clicking the link below:
 
 ## Demo
 
-![](./Yolov1_demo/test1.png)
+![](./Yolov1_demo/Figure_1.png)
+
+![](./Yolov1_demo/Figure_2.png)
+
+![](./Yolov1_demo/Figure_3.png)
+
+![](./Yolov1_demo/Figure_4.png)
+
+![](./Yolov1_demo/Figure_5.png)
+
+![](./Yolov1_demo/Figure_6.png)
 
 ![](./Yolov1_demo/test10.png)
 
-![](./Yolov1_demo/test12.png)
+![](./Yolov1_demo/test18.png)
 
 
 
