@@ -53,8 +53,8 @@ def train(args):
     scheduler = WarmUpMultiStepLR(optimizer,
                                   milestones=STEP_LR_SIZES,
                                   gamma=STEP_LR_GAMMA,
-                                  factor=WARM_UP_FACTOR,
-                                  num_iters=WARM_UP_NUM_ITERS)
+                                  warm_up_factor=WARM_UP_FACTOR,
+                                  warm_up_iters=WARM_UP_NUM_ITERS)
     step = model.load_model(optimizer=optimizer, lr_scheduler=scheduler)
     model.to(DEVICE)
     model.train()
